@@ -1,18 +1,17 @@
 import React, { Component } from 'react'
 
 class AddUsers extends Component {
+  static isDisabled = true
+
   state = {
     firstName: '',
     lastName: '',
     userName: '',
-    gamePlayed: '',
   }
 
   handleChange = (event) => {
     const fieldName = event.target.name
     const fieldValue = event.target.value
-
-    console.log('[name, value] ->', fieldName, fieldValue)
 
     this.setState({
       [fieldName]: fieldValue,
@@ -21,17 +20,50 @@ class AddUsers extends Component {
 
   validateInputs = (_) => {
     const { firstName, lastName, userName } = this.state
-
-    if (firstName == '' || lastName == '' || userName === '') return true
+    if (firstName === '' || lastName === '' || userName === '') {
+      return true
+    }
     return false
+  }
+
+  isUsernameValid = (username) => {
+    const allUsers = this.props.users
+
+    if (allUsers.length == 0) {
+      return true
+    } else {
+      const user = allUsers.filter((user) => user.userName == username)
+      if (user.length > 0) return false
+    }
+
+    return true
+  }
+
+  handleSubmit = (event) => {
+    const { firstName, lastName, userName } = this.state
+
+    event.preventDefault()
+
+    const isEnteredUsernameValid = this.isUsernameValid(userName)
+
+    if (isEnteredUsernameValid) {
+      const userDetails = {
+        firstName,
+        lastName,
+        userName,
+        gamePlayed: 0,
+      }
+      this.props.addUser(userDetails)
+    }
   }
 
   render() {
     const { firstName, lastName, userName } = this.state
+    const isDisabled = this.validateInputs()
 
     return (
       <div className="add-users">
-        <form>
+        <form onSubmit={this.handleSubmit}>
           <div className="input-group">
             <label htmlFor="firstname">First Name</label>
             <input type="text" name="firstName" onChange={this.handleChange} value={firstName} />
@@ -45,7 +77,7 @@ class AddUsers extends Component {
             <input type="text" name="userName" onChange={this.handleChange} value={userName} />
           </div>
 
-          <button type="submit" disabled={this.validateInputs}>
+          <button type="submit" disabled={isDisabled}>
             Add User
           </button>
         </form>
