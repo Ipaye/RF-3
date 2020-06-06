@@ -13,6 +13,16 @@ The instructions for this project are located in the `instructions.md` file.
 */
 
 class App extends Component {
+  state = {
+    users: [],
+  }
+
+  addUser = (userDetails) => {
+    this.setState((oldState) => ({
+      users: [...oldState.users, userDetails],
+    }))
+  }
+
   render() {
     return (
       <div className="App">
@@ -22,7 +32,7 @@ class App extends Component {
         </header>
 
         {/* Add Users section */}
-        <AddUsers />
+        <AddUsers users={this.state.users} addUser={this.addUser} />
       </div>
     )
   }
